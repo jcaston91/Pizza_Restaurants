@@ -1,0 +1,55 @@
+---
+title: "Pizza Final Project"
+author: "Jontavius Caston"
+date: "7/29/2019"
+output: html_document
+---
+first things first lets install the needed packages
+```{r, warning=FALSE, message=FALSE}
+library(knitr)
+library(readr)
+library(ppcor)
+library(dplyr)
+library(ggplot2)
+```
+
+Now we will import our data that we will be using and also limit it to just 200 rows size the data has over 3,000 rows that we do not need for our observation
+```{r, warning=FALSE, message=FALSE}
+Pizza_info <- read.csv("8358_1.csv",stringsAsFactors = FALSE, nrows = 200)
+head(Pizza_info)
+```
+
+
+Here we will plot a histogram of the the amount max which is what we will use in our anaylsis often.
+```{r, warning=FALSE, message=FALSE}
+ggplot(Pizza_info, aes(x= Pizza_info$menus.amountMax)) + geom_histogram(color= 'darkgray', fill='white' ) + labs(x='Max Price')
+```
+
+
+Here is the correlation between the max and min price. 
+```{r, warning=FALSE, message=FALSE}
+cor.test(Pizza_info$menus.amountMin, Pizza_info$menus.amountMax)
+```
+
+
+Now we will look at a scatter plot with the menu min and its corresponding max price.We will also plot a regression line to the graph and we can see that the we can see that there is a very strong positive relationship here.
+```{r, warning=FALSE, message=FALSE}
+ggplot(Pizza_info, aes(x= Pizza_info$menus.amountMin, y=Pizza_info$menus.amountMax)) + geom_point() + xlim(0,40) + ylim(0,40) + geom_jitter() + geom_smooth(method=lm, se = FALSE) + theme_bw() + labs(x='Minimum Price', y='Max Price')
+```
+
+
+Now we will plot the scatter plot of province to max amount. It was difficult to try and cut the data anymore without feeling like I left out too much valuable data. So i decided to keep them all and alter the formatting as best as possible.Plotting this scatter map was just to see what province has the lower max price for a pizza. 
+```{r, warning=FALSE, message=FALSE}
+ggplot(Pizza_info, aes(x= Pizza_info$province, y=Pizza_info$menus.amountMax, col=Pizza_info$province)) + geom_point()   + theme_classic() + geom_jitter() + ylim(0,40) + labs(x='Province', y='Max Price')
+```
+
+Note that viewing all of the X parameters is difficult so we added color to differentiate what providence is at what max amount. Also as we can see that the relationship appears very weak here. 
+
+
+Now we will run a linear model on the minimum price to the max price.
+```{r, warning=FALSE, message=FALSE}
+lm(Pizza_info$menus.amountMin ~ Pizza_info$menus.amountMax, data = Pizza_info)
+```
+
+
+The lm show us that for about every $0.40 that is minimum price that the max price will be about $0.90
